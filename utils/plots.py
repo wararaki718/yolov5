@@ -26,11 +26,19 @@ matplotlib.rc('font', **{'size': 11})
 matplotlib.use('Agg')  # for writing to files only
 
 
-cover_img = None
-def load_cover_img():
-    #if cover_img is None:
-    cover_img = cv2.imread('smartphone_man_walk.png', cv2.IMREAD_COLOR)
-    return cover_img
+person_img = None
+def load_person_img():
+    global person_img
+    if person_img is None:
+        person_img = cv2.imread('smartphone_man_walk.png', cv2.IMREAD_COLOR)
+    return person_img
+
+car_img = None
+def load_car_img():
+    global car_img
+    if car_img is None:
+        car_img = cv2.imread('driving_blue.png', cv2.IMREAD_COLOR)
+    return car_img
 
 
 def color_list():
@@ -70,8 +78,13 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
         tmp = [int(t.flatten().tolist()[0]) for t in x]
         w = int((tmp[2]-tmp[0]))
         h = int((tmp[3]-tmp[1]))
-        
-        resize_img = cv2.resize(load_cover_img(), (w, h))
+        resize_img = cv2.resize(load_person_img(), (w, h))
+        img[tmp[1]:tmp[1]+h, tmp[0]:tmp[0]+w] = resize_img
+    elif label.startswith('car'):
+        tmp = [int(t.flatten().tolist()[0]) for t in x]
+        w = int((tmp[2]-tmp[0]))
+        h = int((tmp[3]-tmp[1]))
+        resize_img = cv2.resize(load_car_img(), (w, h))
         img[tmp[1]:tmp[1]+h, tmp[0]:tmp[0]+w] = resize_img
     else:
         cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
