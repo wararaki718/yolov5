@@ -61,29 +61,21 @@ def butter_lowpass_filtfilt(data, cutoff=1500, fs=50000, order=5):
     return filtfilt(b, a, data)  # forward-backward filter
 
 
-def plot_one_box(x, img, color=None, label=None, line_thickness=3, gn=None):
+def plot_one_box(x, img, color=None, label=None, line_thickness=3):
     # Plots one bounding box on image img
     tl = line_thickness or round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
     color = color or [random.randint(0, 255) for _ in range(3)]
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
-    print(f'box: {label}')
     if 'person' in label:
-        print(c1, c2)
-        #print(x.shape)
         tmp = [int(t.flatten().tolist()[0]) for t in x]
-        print(type(tmp[0]))
-        print(gn)
-        print(type(gn))
-        #h = int((x[2].tolist()-x[0].tolist())/gn)
-        #w = int((x[3].tolist()-x[1].tolist())/gn)
-        h = int((tmp[2]-tmp[0]))
-        w = int((tmp[3]-tmp[1]))
+        w = int((tmp[2]-tmp[0]))
+        h = int((tmp[3]-tmp[1]))
         
-        print(h, w)
-        resize_img = cv2.resize(load_cover_img(), (h, w))
-        img[c1[0]:c2[0], c1[1]:c2[1]] = resize_img
+        resize_img = cv2.resize(load_cover_img(), (w, h))
+        img[tmp[1]:tmp[1]+h, tmp[0]:tmp[0]+w] = resize_img
     else:
         cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
+
     if label:
         tf = max(tl - 1, 1)  # font thickness
         t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
